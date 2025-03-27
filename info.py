@@ -55,9 +55,16 @@ AUTH_REQ_CHANNEL = int(environ.get('AUTH_REQ_CHANNEL', '-1002023191399'))
 NO_RESULTS_MSG = is_enabled((environ.get("NO_RESULTS_MSG", 'True')), False)
 
 # MongoDB information
-DATABASE_URI = environ.get('DATABASE_URI', "")
-DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
-COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Rkmovieszip')
+import os
+
+# Primary Database
+MONGO_DB_URI_1 = os.getenv("MONGO_DB_URI_1", "mongodb+srv://primary_db_url")
+
+# Secondary Database (Backup)
+MONGO_DB_URI_2 = os.getenv("MONGO_DB_URI_2", "mongodb+srv://secondary_db_url")
+
+# Feature On/Off
+ENABLE_MULTI_DB = os.getenv("ENABLE_MULTI_DB", "True").lower() == "true"
 
 #stream link shortner
 STREAM_SITE = (environ.get('STREAM_SITE', 'sharedisklinks.com'))
