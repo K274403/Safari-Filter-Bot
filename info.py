@@ -58,7 +58,7 @@ NO_RESULTS_MSG = is_enabled((environ.get("NO_RESULTS_MSG", 'True')), False)
 import os
 
 # Primary Database
-MONGO_DB_URI_1 = os.getenv("MONGO_DB_URI_1", "mongodb+srv://deepak:Deepak@cluster0.yp2kjbu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+MONGO_DB_URI_1 = os.getenv("MONGO_DB_URI_1", "")
 
 # Secondary Database (Backup)
 MONGO_DB_URI_2 = os.getenv("MONGO_DB_URI_2", "mongodb+srv://secondary_db_url")
