@@ -1,19 +1,22 @@
 # This code has been modified by @Safaridev
 # Please do not remove this credit
 from fuzzywuzzy import process
-from imdb import IMDb
+from utils.tmdb import search_movie
 from utils import temp
 from info import REQ_CHANNEL, GRP_LNK
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import get_search_results, get_all_files
 
-imdb = IMDb()
-
 async def ai_spell_check(chat_id, wrong_name):
     try:  
         async def search_movie(wrong_name):
-            search_results = imdb.search_movie(wrong_name)
+            search_movie = search_movie(query)
+if movie:
+    title = movie.title
+    rating = movie.vote_average
+    overview = movie.overview
+    poster = f"https://image.tmdb.org/t/p/w500{movie.poster_path}"
             movie_list = [movie['title'] for movie in search_results]
             return movie_list
 
