@@ -64,7 +64,7 @@ MONGO_DB_URI_1 = os.getenv("MONGO_DB_URI_1", "mongodb+srv://deepak:Deepak@cluste
 MONGO_DB_URI_2 = os.getenv("MONGO_DB_URI_2", "mongodb+srv://secondary_db_url")
 
 # Feature On/Off
-ENABLE_MULTI_DB = os.getenv("ENABLE_MULTI_DB", "True").lower() == "true"
+ENABLE_MULTI_DB = os.getenv("ENABLE_MULTI_DB", "False").lower() == "true"
 
 #stream link shortner
 STREAM_SITE = (environ.get('STREAM_SITE', 'sharedisklinks.com'))
