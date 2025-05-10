@@ -10,23 +10,17 @@ logging.getLogger("pyrogram").setLevel(logging.ERROR)
 logging.getLogger("imdbpy").setLevel(logging.ERROR)
 logging.getLogger("cinemagoer").setLevel(logging.ERROR)
 
-from pyrogram import Client, __version__
+from pyrogram import Client, __version__, filters
 from pyrogram.raw.all import layer
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from database.ia_filterdb import Media
 from database.users_chats_db import db
 from info import SESSION, API_ID, API_HASH, BOT_TOKEN, LOG_STR, LOG_CHANNEL, PORT, BIN_CHANNEL, ON_HEROKU
 from typing import Union, Optional, AsyncGenerator
-from pyrogram import types
 from Script import script 
 from datetime import date, datetime 
 import pytz
 from utils import temp, check_reset_time
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logging.getLogger("aiohttp").setLevel(logging.ERROR)
-logging.getLogger("aiohttp.web").setLevel(logging.ERROR)
 import asyncio
 import sys
 import importlib
@@ -45,7 +39,46 @@ files = glob.glob(ppath)
 SafariBot.start()
 loop = asyncio.get_event_loop()
 
+# 🔍 Search Multi-Audio Function
+async def search_multi_audio_files(query):
+    results = []
+    async for doc in Media.find({
+        "file_name": {"$regex": f"{query}.*multi", "$options": "i"}
+    }).limit(5):
+        results.append(doc)
+    return results
 
+# 💬 Handle PM Filters with Multi-Audio Button
+@SafariBot.on_message(filters.private & filters.text)
+async def handle_private_message(client, message: Message):
+    query = message.text.strip()
+    multi_audio_results = await search_multi_audio_files(query)
+
+    buttons = []
+    if multi_audio_results:
+        buttons.append(
+            [InlineKeyboardButton("🎧 Multi Audio Files", callback_data=f"multi_audio_{query}")]
+        )
+
+    reply_markup = InlineKeyboardMarkup(buttons) if buttons else None
+    await message.reply("🔍 Searching...", reply_markup=reply_markup)
+
+# 🎯 Callback for Multi Audio Button
+@SafariBot.on_callback_query()
+async def callback_handler(client, callback_query):
+    if callback_query.data.startswith("multi_audio_"):
+        keyword = callback_query.data.replace("multi_audio_", "")
+        results = await search_multi_audio_files(keyword)
+        if not results:
+            await callback_query.message.edit("❌ No Multi Audio Files found.")
+            return
+
+        msg = "\n\n".join([f"📽️ <b>{x['file_name']}</b>" for x in results])
+        await callback_query.message.edit(
+            f"🎧 <b>Multi Audio Results for:</b> <code>{keyword}</code>\n\n{msg}"
+        )
+
+# 🔁 Bot Start & Loader
 async def start():
     print('\n')
     print('Initalizing Your Bot')
@@ -89,7 +122,6 @@ async def start():
     await web.TCPSite(app, bind_address, PORT).start()
     await idle()
     await SafariBot.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT.format(temp.U_NAME, temp.B_NAME, today, time))
-
 
 if __name__ == '__main__':
     try:
